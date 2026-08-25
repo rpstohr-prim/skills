@@ -1,0 +1,4 @@
+repo=https://github.com/coreyhaines31/marketingskills
+commit=becd60ee9df07f7d595c26e092253ba49f7a9ffc
+date=2026-08-24
+license=MIT
