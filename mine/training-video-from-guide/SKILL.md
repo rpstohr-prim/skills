@@ -2,7 +2,7 @@
 name: training-video-from-guide
 description: "Turn a PDF user guide, manual, SOP or training document into produced narrated training videos using the HeyGen MCP connector. Use this whenever the user wants to make training videos, explainer videos, onboarding videos or screen-walkthrough videos from a document — and also when they hand over a product manual, user guide or procedure PDF and ask to 'make training from this', 'record segments', 'turn this into videos', 'build a curriculum', or ask how long producing training from a guide would take. Covers extracting screenshots and the client's own palette from the PDF, re-cutting the document into task-shaped segments, writing narration that lands at the right runtime, framing stills so nothing is cropped or covered by captions, highlighting the exact field being narrated, and driving HeyGen end to end."
 metadata:
-  version: 1.0.0
+  version: 1.1.0
 ---
 
 # Training videos from a PDF guide
@@ -169,6 +169,27 @@ Getting box coordinates is an iterate-and-check loop: read the screenshot's
 dimensions, estimate the region, render, look at it, adjust. Budget for it — it
 is the most time-consuming part of the whole process, roughly an hour per video.
 
+## 6a. Write the knowledge check with the segment
+
+While the narration is fresh, write **two or three questions per segment** that test what the segment
+just taught — not trivia from the field table, but the consequence beats: the counterintuitive
+convention, the control not to use, the two facts that are only dangerous together. Each question
+carries its answer options, the correct one, a one-line explanation, and the guide page it comes from.
+Write them in Markdown beside the script so they ride with the video through review:
+
+```markdown
+### Segment 7 · Resolving a case
+
+1. What happens to the external communication when a case is resolved?
+   - a. It is sent as normal
+   - b. **It is suppressed** ✓
+   - c. It is queued for the next business day
+   Why: Resolve moves the case to the resolved queue and suppresses the mailgram or extension. (Guide p.12)
+```
+
+Questions written later, from the finished video, drift from what the narration actually said; questions
+written with the script cannot.
+
 ## 7. Structure and render
 
 A shape that works:
@@ -209,3 +230,4 @@ Alongside the MP4s, hand over:
 - **The extracted assets**, named for what they show
 - **The sampled palette**, so later work matches
 - **Measured runtimes**, recorded wherever they are quoted
+- **Knowledge checks**, two or three cited questions per segment, in Markdown
