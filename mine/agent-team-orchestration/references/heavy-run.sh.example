@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Machine-wide lock for heavy runs (e2e, web/turbo builds, docker, DB test suites) across ALL project
+# threads and their agents (T0, 13 Nov 2026, after load hit 136 on 12 cores). One heavy run at a time.
+# Usage:  bash ~/Projects/<Project>/heavy-run.sh <command> [args...]
+#   e.g.  bash ~/Projects/<Project>/heavy-run.sh corepack pnpm --filter <package> e2e
+# It waits for the lock (printing who holds it every minute), runs the command, and releases the lock
+# on exit, even on failure or Ctrl-C. A lock whose holder process is gone is cleared automatically.
+# Light work (unit tests of one package, typecheck, lint, content tests) does not need it.
+set -u
+LOCK="${PROJECT_HEAVY_LOCK:-$HOME/.project-heavy.lock}"
+WHO="${PROJECT_THREAD:-$(basename "$PWD")}"
+waited=0
+while ! mkdir "$LOCK" 2>/dev/null; do
+  holder_pid="$(cat "$LOCK/pid" 2>/dev/null || echo)"
+  if [ -n "$holder_pid" ] && ! kill -0 "$holder_pid" 2>/dev/null; then
+    echo "heavy-run: clearing stale lock (pid $holder_pid gone)"; rm -rf "$LOCK"; continue
+  fi
+  if [ $((waited % 60)) -eq 0 ]; then
+    echo "heavy-run: waiting; held by $(cat "$LOCK/who" 2>/dev/null || echo '?') since $(cat "$LOCK/since" 2>/dev/null || echo '?')"
+  fi
+  sleep 5; waited=$((waited + 5))
+done
+echo $$ > "$LOCK/pid"; echo "$WHO: $*" > "$LOCK/who"; date '+%H:%M:%S' > "$LOCK/since"
+trap 'rm -rf "$LOCK"' EXIT INT TERM
+"$@"
